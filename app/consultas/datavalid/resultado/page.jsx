@@ -1,21 +1,32 @@
 "use client"
 import React, { useEffect } from 'react'
 import BiometricaFacialResultado from './biometria-facial'
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js';
 import withAuth from '@/utils/AuthCheck';
 
 const page = () => {
 
     
-    const handleGeneratePdf = () => {
-        const element = document.getElementById('pdfContent');
+    const handleGeneratePdf = async () => {
+        if (typeof window !== 'undefined') {
+            try {
+              // Carregar html2pdf.js dinamicamente
+              const { default: html2pdf } = await import('html2pdf.js');
+              
+              // Agora você pode usar html2pdf normalmente
+              const element = document.getElementById('pdfContent');
     
-        if (element) {
-            const options = {
-                filename: 'biometria-facial.pdf', // Defina o nome do arquivo desejado aqui
-              };
-          html2pdf(element, options);
-        }
+              if (element) {
+                const options = {
+                  filename: 'nome-do-arquivo.pdf',
+                };
+    
+                html2pdf(element, options);
+              }
+            } catch (error) {
+              console.error('Erro ao carregar html2pdf.js:', error);
+            }
+          }
       };
     
   return (
