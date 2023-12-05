@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.modalConfirmacao {
+    font-size: 16px;
+    min-width: 380px;
+    max-width: 610px;
+    min-height: 420px;
+    padding: 10px;
+    background-color: white;
+    @apply p-10
+  }
+  .modalConfirmacao > .header {
+    width: 100%;
+    /* border-bottom: 1px solid gray; */
+    font-size: 18px;
+    text-align: center;
+    padding: 5px;
+    margin-bottom: 60px;
+  }
+  .modalConfirmacao > .content {
+    width: 100%;
+    padding: 10px 5px;
+  }
+  .modalConfirmacao > .actions {
+    width: 100%;
+    padding: 10px 5px;
+    margin: auto;
+    text-align: center;
+  }
+  .modalConfirmacao > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    right: 10px;
+    top: 10px;
+    font-size: 24px;
+    @apply bg-cor-principal;
+    border: 1px solid #cfcece;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    
+  }
+
+  .modal-subtitulo {
+    color: #000;
+    text-align: center;
+    font-family: Outfit;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .modal-texto {
+    color: #000;
+    font-family: Outfit;
+    font-size: 28px;
+    font-weight: 400;
+  }
+  
+  /* login */
+  /* **** */
+  .modal-login {
+    font-size: 16px;
+    min-width: 380px;
+    max-width: 615px;
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    max-height: 534px;
+    padding: 10px;
+    background-color: white;
+    @apply p-10
+
+  }
+
+  .modal-login > .header {
+    width: 100%;
+    font-size: 30px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .modal-login > .content {
+    width: 100%;
+    padding: 10px 5px;
+  }
+
+  .modal-login > .actions {
+    width: 100%;
+    padding: 10px 5px;
+    margin: auto;
+    text-align: center;
+  }
+
+  .modal-login > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    right: 10px;
+    top: 10px;
+    width: 60px;
+    height: 60px;
+    
+  }

@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rautaki-consulta-cert-depl
+spec:
+  replicas: 1
+  selector: 
+    matchLabels: 
+      app: rautaki-consulta-cert
+  template:
+    metadata:
+      labels: 
+        app: rautaki-consulta-cert
+    spec:
+      containers:
+      - name: rautaki-consulta-cert
+        image: DOCKER_IMAGE
+        env:
+        - name: NEXT_PUBLIC_AVALON_CLIENTE_IP
+          value: "http://rautaki-consulta-cert-api-clusterip-srv"
+        - name: PORT
+          value: "8080"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rautaki-consulta-cert-clusterip-srv
+spec:
+  type: ClusterIP
+  selector:
+    app: rautaki-consulta-cert
+  ports:
+  - name: rautaki-consulta-cert
+    protocol: TCP
+    port: 80
+    targetPort: 8080
