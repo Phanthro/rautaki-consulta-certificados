@@ -1,8 +1,31 @@
 'use client'
+import { useEffect, useState } from 'react'
 import CardServico from './componentes/card-servico'
 import withAuth from '@/utils/AuthCheck'
+import { enviaFormulario } from './componentes/enviarFormulario'
+import { useAmbiente } from '@/utils/AmbienteContext'
 
 const Home = () => {
+
+  const [consultas, setConsultas] = useState({});
+
+  useEffect(()=>{
+    const consultaConsultas = async  () => {
+
+        const url = `https://localhost:7150/v1/Consultas/ObterConsultas`
+
+        const res = await enviaFormulario('', url, 'GET')
+
+        if(res){
+          let jsonParse = JSON.parse(res)
+          jsonParse.dados = jsonParse.dados.filter( item => !item.itemPai )
+          setConsultas(jsonParse)
+        }
+
+    }
+    consultaConsultas();
+
+},[])
   return (
     <div>
       <div className="max-w-3xl mx-auto text-center mt-12">
@@ -12,21 +35,15 @@ const Home = () => {
         <p className="text-lg text-gray-800 mb-8">Abaixo estão as consultas que estão disponíveis.</p>
       </div>
       <div className='max-w-[1200px] min-h-fit m-auto text-center flex justify-center'>
-
-        <CardServico
-          titulo="Validação de Dados e Biometria"
-          descricao="O Datavalid é uma solução de inteligência para qualificação cadastral de pessoas físicas e jurídicas."
-          valor="30.00"
-          link="/consultas/datavalid"
-        />
-
-        <CardServico
-          titulo="Dívida Ativa"
-          descricao="Consulta detalhada sobre as dívidas ativas da União direto das bases da PGFN e também consulta dos dados do devedor, seja pessoa física ou jurídica."
-          valor="10.00"
-          link="/consultas/dividaAtiva"
-
-        />
+        {consultas && consultas.dados && consultas.dados.map((item, index) => (
+          <CardServico
+            key={index}
+            titulo={item.nome}
+            descricao={item.descricao}
+            valor={item.valor}
+            link={item.link}
+          />
+        ))}
 
       </div>
     </div>

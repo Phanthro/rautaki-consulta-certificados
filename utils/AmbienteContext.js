@@ -10,7 +10,8 @@ export const AmbienteProvider = ({ children, acessos, logado, origin }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLogado, setIsLogado] = useState(logado);
   const [token, setToken] = useState('');
-  const [_user, setUser] = useState('');
+  const [user, setUser] = useState('');
+  const [creditos, setCreditos] = useState({});
 
   const [dados, setDados] = useState('{}')
  
@@ -29,8 +30,9 @@ export const AmbienteProvider = ({ children, acessos, logado, origin }) => {
         isLoading, setIsLoading,
         isLogado, setIsLogado,
         token, setToken,
-        _user, setUser,
-        dados, setDados
+        user, setUser,
+        dados, setDados,
+        creditos, setCreditos
       }}>
       {children}
     </AmbienteContext.Provider>

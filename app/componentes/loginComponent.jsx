@@ -4,9 +4,10 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import '@/styles/modal.css'
 import { useAmbiente } from '@/utils/AmbienteContext';
+import { ValidaToken } from '@/utils/ValidaToken';
 
 const LoginComponent = () => {
-  const { isLoading, setIsLoading, setPermissoes, setIsLogado, setToken } = useAmbiente()
+  const { isLoading, setIsLoading, setPermissoes, setIsLogado, setToken, setUser } = useAmbiente()
 
   const router = useRouter();
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -70,12 +71,26 @@ const LoginComponent = () => {
           else {
             setPermissoes(retorno.permissoes)
             setToken(retorno.jwt)
+
+            let url = `https://localhost:7150/v1/Auth/ValidaToken`
+            const response = await ValidaToken(url)
+            
+            const user = await response
+            if (!user) {
+              setIsLogado(false)
+              router.push('/')
+              return;
+            }
+            
+            setUser(JSON.parse(user));
+
             setIsLogado(true)
             router.push('/')
           }
         })
 
       } catch (error) {
+        throw new Error("Erro ao logar.")
 
       } finally {
         setIsLoading(false)

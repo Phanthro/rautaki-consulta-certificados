@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import InputMask from "react-input-mask";
 import Popup from 'reactjs-popup';
 import DatePicker, { registerLocale } from 'react-datepicker';
@@ -11,16 +11,21 @@ import { useRouter } from 'next/navigation';
 import 'react-datepicker/dist/react-datepicker.css';
 import { enviaFormulario } from '@/app/componentes/enviarFormulario';
 import { useAmbiente } from '@/utils/AmbienteContext';
+import { obterConsulta } from '../obterConsultas';
 
 registerLocale('pt-BR', pt)
 
 
 const BiometriaFacial = () => {
     const router = useRouter();
-    const {setDados} = useAmbiente();
+    const {setDados, creditos, consultas} = useAmbiente();
 
     const [imagemCarregada, setImagemCarregada] = useState('')
     const [open, setOpen] = useState(false);
+    const [valorConsulta, setValorConsulta] = useState(0);
+    const [temCredito, setTemCredito] = useState(false);
+
+
     const overlayStyle = { background: 'rgba(0,0,0,0.5)' };
     const arrowStyle = { color: '#000' };
     const closeModal = () => {
@@ -77,7 +82,6 @@ const BiometriaFacial = () => {
     }
 
     const [formData, setFormData] = useState(formVazio);
-    // const [errors, setErrors] = useState(formVazio);
     const [erroGeral, setErroGeral] = useState('')
 
     const updateNestedState = (prevObj, keys, value) => {
@@ -104,6 +108,7 @@ const BiometriaFacial = () => {
 
         setFormData((prevFormData) => updateNestedState(prevFormData, keys, value));
     };
+
     const handleInputImageChange = (e) => {
 
         const { name, files } = e.target;
@@ -202,7 +207,7 @@ const BiometriaFacial = () => {
         if (validateForm()) {
 
             // const url = `http://avaloncliente-clusterip-srv/v1/Cadastro`
-            const url = `https://localhost:7150/v1/Consultas/ValidarIdentidade/facial`
+            const url = `https://localhost:7150/v1/DataValid/ValidarIdentidade/facial`
 
             console.log('enviando formulário!')
 
@@ -211,14 +216,11 @@ const BiometriaFacial = () => {
             
             setDados({
                 requisicao: formData,
-                retorno: JSON.parse(resposta).dados
+                retorno: JSON.parse(resposta).dados,
+                consulta: 'facial'
             })
 
             router.push('/consultas/datavalid/resultado')
-
-
-
-            // setOpen(true)
 
         }
         else {
@@ -275,6 +277,25 @@ const BiometriaFacial = () => {
 
     }
 
+    useEffect(()=>{
+
+        const verificaCreditos = async ()=>{
+            const consulta = await obterConsulta(100);
+
+            if(!consulta) return;
+
+            const saldo = creditos.dados;
+            const custoConsulta = consulta.valor;
+            setValorConsulta(custoConsulta)
+            
+            if(saldo >= custoConsulta){
+                setTemCredito(true)
+            }
+        }
+        verificaCreditos()
+
+    },[creditos])
+
 
     return (
         <div className='p-10'>
@@ -322,6 +343,7 @@ const BiometriaFacial = () => {
                             value={formData.answer.sexo}
                             onChange={handleInputChange}
                             className="pr-"
+                            required
                         >
                             <option value='' disabled></option>
                             <option value='M' >Masculino</option>
@@ -337,6 +359,7 @@ const BiometriaFacial = () => {
                             name="answer.nacionalidade"
                             value={formData.answer.nacionalidade}
                             onChange={handleInputChange}
+                            required
                         >
                             <option value='' disabled> </option>
                             <option value='1' > Brasileiro</option>
@@ -357,6 +380,7 @@ const BiometriaFacial = () => {
                             onChange={date => handleInputDateChange(date)}
                             className=" p-2 w-full border "
                             dateFormat="dd/MM/yyyy"
+                            required
                         />
                         {/* {errors.answer.data_nascimento && <span className="text-red-500 text-sm">{errors.answer.data_nascimento}</span>} */}
                     </div>
@@ -425,6 +449,7 @@ const BiometriaFacial = () => {
                             value={formData.answer.documento.tipo}
                             onChange={handleInputChange}
                             className="primeiro-item-cinza"
+                            required
                         >
                             <option value=''></option>
                             <option value='1' > Carteira de identidade</option>
@@ -643,6 +668,7 @@ const BiometriaFacial = () => {
                             onChange={date => handleInputCnhDateChange('answer.cnh.data_primeira_habilitacao', date)}
                             className=" p-2 border"
                             dateFormat="dd/MM/yyyy"
+                            required
                         />
                         {/* {errors.answer.cnh.data_primeira_habilitacao && <span className="text-red-500 text-sm">{errors.answer.cnh.data_primeira_habilitacao}</span>} */}
                     </div>
@@ -657,6 +683,7 @@ const BiometriaFacial = () => {
                             onChange={date => handleInputCnhDateChange('answer.cnh.data_validade', date)}
                             className=" p-2 border"
                             dateFormat="dd/MM/yyyy"
+                            required
                         />
                         {/* {errors.answer.cnh.data_validade && <span className="text-red-500 text-sm">{errors.answer.cnh.data_validade}</span>} */}
                     </div>
@@ -671,6 +698,7 @@ const BiometriaFacial = () => {
                             onChange={date => handleInputCnhDateChange('answer.cnh.data_ultima_emissao', date)}
                             className=" p-2 border"
                             dateFormat="dd/MM/yyyy" 
+                            required
                         />
                         {/* {errors.answer.cnh.data_ultima_emissao && <span className="text-red-500 text-sm">{errors.answer.cnh.data_ultima_emissao}</span>} */}
                     </div>
@@ -696,6 +724,7 @@ const BiometriaFacial = () => {
                             value={formData.answer.cnh.codigo_situacao}
                             onChange={handleInputChange}
                             className="primeiro-item-cinza"
+                            required
                         >
                             <option value=''></option>
                             <option value='2' > Em emissão</option>
@@ -713,6 +742,7 @@ const BiometriaFacial = () => {
                             value={formData.answer.cnh.possui_impedimento}
                             onChange={handleInputChange}
                             className="w-full primeiro-item-cinza"
+                            required
                         >
                             <option value=''></option>
                             <option value='true' > Sim</option>
@@ -731,6 +761,7 @@ const BiometriaFacial = () => {
                         onChange={handleInputImageChange} 
                         accept="image/*" 
                         className='input-imagem '
+                        required
                         />
                     </div>
                     {imagemCarregada && (
@@ -743,9 +774,13 @@ const BiometriaFacial = () => {
                 </div>
 
                 <div className='w-full text-center'>
+                    {temCredito?
                     <button type="submit" className="bg-cor-principal hover:bg-verde text-white font-bold py-2 px-4 shadow-sombra w-[178px] h-[50px]">
-                        Salvar
+                        Consultar <div className='text-xs font-RobotoMono font-normal'>(R${valorConsulta.toFixed(2)})</div>
                     </button>
+                    :
+                    <div>Créditos insuficiente.</div>
+                    }
                 </div>
                 {erroGeral && <span className="text-red-500 text-sm">{erroGreal}</span>}
             </form>

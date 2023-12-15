@@ -1,11 +1,12 @@
 "use client"
 import { useAmbiente } from '@/utils/AmbienteContext';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Creditos from './creditos';
 
 const Navbar = ({ data }) => {
     const [userMenuOpen, setUserMenuOpen] = useState(false)
-    const { isLogado } = useAmbiente();
+    const { isLogado, user } = useAmbiente();
 
     const AbreMenuUsuario = () => {
         setUserMenuOpen(!userMenuOpen)
@@ -38,43 +39,13 @@ const Navbar = ({ data }) => {
                         className="!visible hidden flex-grow basis-[100%] items-center lg:!flex lg:basis-auto">
                         <a
                             className="mb-4 ml-2 mr-5 mt-3 flex items-center text-neutral-900 hover:text-neutral-900 focus:text-neutral-900 dark:text-neutral-200 dark:hover:text-neutral-400 dark:focus:text-neutral-400 lg:mb-0 lg:mt-0"
-                            href="#">Serpro - Rauteki</a>
-                        {/* <ul
-                            className="list-style-none mr-auto flex flex-col pl-0 lg:flex-row"
-                            data-te-navbar-nav-ref>
-                            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
-                                <a
-                                    className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-zinc-400"
-                                    href="#"
-                                    data-te-nav-link-ref
-                                >Dashboard</a>
-                            </li>
-                            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
-                                <a
-                                    className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                                    href="#"
-                                    data-te-nav-link-ref
-                                >Team</a>
-                            </li>
-                            <li className="mb-4 lg:mb-0 lg:pr-2" data-te-nav-item-ref>
-                                <a
-                                    className="text-neutral-500 transition duration-200 hover:text-neutral-700 hover:ease-in-out focus:text-neutral-700 disabled:text-black/30 motion-reduce:transition-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:focus:text-neutral-300 lg:px-2 [&.active]:text-black/90 dark:[&.active]:text-neutral-400"
-                                    href="#"
-                                    data-te-nav-link-ref
-                                >Projects</a>
-                            </li>
-                        </ul> */}
+                            href="/">Serpro - Rauteki</a>
                     </div>
 
                     <div className="relative flex items-center gap-5">
                         {isLogado ? <>
-                            <div className='flex items-baseline relative'>
-                                <span className='text-xs text-neutral-500 font-mono absolute top-[-12px] left-2'>créditos</span>
-                                <div className="text-green-600 transition duration-200 font-RobotoMono
-                            motion-reduce:transition-none dark:text-green-400 lg:px-2 text-2xl
-                            [&.active]:text-black/90 dark:[&.active]:text-green-400"
-                                >R$ 500,00</div>
-                            </div>
+                          
+                            <Creditos />
 
                             <a
                                 className="mr-4 text-neutral-600 transition duration-200 hover:text-neutral-700 hover:ease-in-out 
@@ -98,14 +69,18 @@ const Navbar = ({ data }) => {
                                 className="relative">
                                 <a onClick={AbreMenuUsuario}
                                     className="hidden-arrow flex items-center whitespace-nowrap transition 
-                                    duration-150 ease-in-out motion-reduce:transition-none cursor-pointer"
+                                    duration-150 ease-in-out motion-reduce:transition-none cursor-pointer justify-center"
                                 >
                                     <img
-                                        src="../images/user.png"
+                                        src="/images/user.png"
                                         className="rounded-full"
                                         style={{ height: '50px', width: '50px' }}
                                         alt=""
                                         loading="lazy" />
+                                        <div className='absolute text-gray-400 mt-16 text-xs'>
+                                            {user.username}
+
+                                        </div>
                                 </a>
                                 <ul className={`absolute z-[1000] float-right m-0 min-w-max right-0
                                 list-none overflow-hidden rounded-lg border-none bg-white bg-clip-padding 
@@ -120,6 +95,16 @@ const Navbar = ({ data }) => {
                                             href="/"
                                         >Recarga</a>
                                     </li>
+                                    <li>
+                                        <a
+                                            className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal 
+                                        text-neutral-700 hover:bg-neutral-100 active:text-neutral-800 active:no-underline 
+                                        disabled:pointer-events-none disabled:bg-transparent disabled:text-neutral-400 
+                                        dark:text-neutral-200 dark:hover:bg-white/30"
+                                            href="/historicos/usuario/"
+                                        >Histórico</a>
+                                    </li>
+
                                     <li>
                                         <a
                                             className="block w-full whitespace-nowrap bg-transparent px-4 py-2 text-sm font-normal 

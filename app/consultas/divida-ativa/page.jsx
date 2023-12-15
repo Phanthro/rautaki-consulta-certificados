@@ -1,8 +1,7 @@
 "use client"
 import React, { useState } from 'react'
-import BiometriaFacial from './biometria-facial';
+import DividaAtiva from './divida-ativa';
 import withAuth from '@/utils/AuthCheck';
-import Documento from './documento';
 
 const page = () => {
     const [abaAtiva, setAbaAtiva] = useState(1);
@@ -18,28 +17,18 @@ const page = () => {
                     className={`py-2 px-4 ${abaAtiva === 1 ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-500'} focus:outline-none`}
                     onClick={() => handleClickAba(1)}
                 >
-                    Biometrial Facial
+                    Dívida Ativa
                 </button>
-                <button
-                    className={`py-2 px-4 ${abaAtiva === 2 ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-500'} focus:outline-none`}
-                    onClick={() => handleClickAba(2)}
-                >
-                    Documento
-                </button>
+              
             </div>
 
             <div>
                 {abaAtiva === 1 && (
                     <div className="py-4">
-                        <BiometriaFacial />
+                        <DividaAtiva />
                     </div>
                 )}
-
-                {abaAtiva === 2 && (
-                    <div className="py-4">
-                        <Documento />
-                    </div>
-                )}
+              
             </div>
         </div>
     )

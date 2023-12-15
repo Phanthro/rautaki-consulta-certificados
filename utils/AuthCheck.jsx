@@ -28,26 +28,8 @@ const withAuth = (Component) => {
           return;
         }
         
-        setUser(user);
+        setUser(JSON.parse(user));
         setIsLogado(true);
-
-        // const pagina = Paginas.find((x)=>{
-        //   return x.rota === pathname
-        // });
-
-        // if(!pagina)// verifica se a pagina existe
-        // {
-        //   router.push('/painel/inicial');
-        //   return null;
-        // }
-        
-        // const usuario = JSON.parse(user)
-        // const temPermissao = usuario.permissoes.includes(pagina.id)
-
-        // if(!temPermissao){
-        //   router.push('/painel/inicial');
-        // }
-        
       };
       getUser();
   

@@ -1,11 +1,10 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import BiometricaFacialResultado from './biometria-facial'
-// import html2pdf from 'html2pdf.js';
 import withAuth from '@/utils/AuthCheck';
-import DocumentoResultado from './documento';
 import { useRouter } from 'next/navigation';
 import { useAmbiente } from '@/utils/AmbienteContext';
+import InscricaoResultado from './inscricao';
+import DevedorResultado from './devedor';
 
 const page = (props) => {
   const [consultaFeita, setConsultafeita] = useState('')
@@ -33,7 +32,7 @@ const page = (props) => {
   return (
     <div>
       <div id="pdfContent">
-        {dados.consulta === 'documento' ? <DocumentoResultado /> : <BiometricaFacialResultado />}
+        {dados.consulta === 'inscricao' ? <InscricaoResultado /> : <DevedorResultado />}
       </div>
       <div className='absolute top-24 left-3/4 transform -translate-x-1/2 bg-cor-principal text-white font-bold p-2'>
         <button className='m-auto w-[100px]' onClick={handleGeneratePdf}>Gerar PDF</button>
