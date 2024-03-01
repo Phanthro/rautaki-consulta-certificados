@@ -11,8 +11,8 @@ const page = () => {
     };
 
     return (
-        <div>
-            <div className="flex border-b">
+        <div className='bg-fundo-borda bg-contain bg-no-repeat bg-cor-principal'>
+            <div className="flex ">
                 <button
                     className={`py-2 px-4 ${abaAtiva === 1 ? 'bg-gray-200 text-gray-800' : 'bg-gray-100 text-gray-500'} focus:outline-none`}
                     onClick={() => handleClickAba(1)}

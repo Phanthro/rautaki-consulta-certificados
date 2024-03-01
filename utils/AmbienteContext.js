@@ -6,6 +6,7 @@ const AmbienteContext = createContext();
 
 export const AmbienteProvider = ({ children, acessos, logado, origin }) => {
   const [ambiente, setAmbiente] = useState('teste');
+  const [sidebarOpen, setsidebarOpen] = useState(false);
   const [permissoes, setPermissoes] = useState(acessos);
   const [isLoading, setIsLoading] = useState(false);
   const [isLogado, setIsLogado] = useState(logado);
@@ -22,6 +23,10 @@ export const AmbienteProvider = ({ children, acessos, logado, origin }) => {
     setAmbiente(ambiente === 'teste' ? 'producao' : 'teste');
   };
 
+  const toggleSidebar = () => {
+    setsidebarOpen(!sidebarOpen);
+  };
+
   return (
     <AmbienteContext.Provider value={
       { ambiente, toggleAmbiente,
@@ -32,7 +37,8 @@ export const AmbienteProvider = ({ children, acessos, logado, origin }) => {
         token, setToken,
         user, setUser,
         dados, setDados,
-        creditos, setCreditos
+        creditos, setCreditos,
+        sidebarOpen, toggleSidebar
       }}>
       {children}
     </AmbienteContext.Provider>

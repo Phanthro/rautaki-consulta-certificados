@@ -12,7 +12,7 @@ const HistoricoUsuario = ({ params }) => {
 
   const [historico, setHistorico] = useState({});
   const {dados, setDados, user} = useAmbiente();
-  const urlBase = 'https://localhost:7150/v1/Consultas/UsuarioConsultasHistorico';
+  const urlBase = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/Consultas/UsuarioConsultasHistorico`;
 
   useEffect(() => {
     const consultaHistorico = async () => {
@@ -55,10 +55,29 @@ const HistoricoUsuario = ({ params }) => {
         return {tipo:'facial', alvo:'/consultas/datavalid/resultado'};
       case Consulta[1].consultaId: //Validação de Documento
         return {tipo:'documento', alvo:'/consultas/datavalid/resultado'};
+
       case Consulta[2].consultaId: //Dívida Ativa - inscricao
         return {tipo:'inscricao', alvo:'/consultas/divida-ativa/resultado'};
       case Consulta[3].consultaId: //Dívida Ativa - devedor
         return {tipo:'devedor', alvo:'/consultas/divida-ativa/resultado'};
+
+      case Consulta[4].consultaId: //CNPJ - basica
+        return {tipo:'devedor', alvo:'/consultas/cnpj/resultado'};
+      case Consulta[5].consultaId: //CNPJ - qsa
+        return {tipo:'devedor', alvo:'/consultas/cnpj/resultado'};
+        case Consulta[6].consultaId: //CNPJ - empresa
+        return {tipo:'devedor', alvo:'/consultas/cnpj/resultado'};
+
+      case Consulta[7].consultaId: //CPF
+        return {tipo:'devedor', alvo:'/consultas/cpf/resultado'};
+
+      case Consulta[8].consultaId: //CND
+        return {tipo:'devedor', alvo:'/consultas/cnd/resultado'};
+
+      case Consulta[9].consultaId: //CCIR
+        return {tipo:'devedor', alvo:'/consultas/ccir/resultado'};
+
+      
       default:
         throw new Error('Consulta não encontrada');
     }

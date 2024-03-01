@@ -7,7 +7,7 @@ async function TokenGenerator() {
   
     async function generateToken() {
 
-        const url = 'https://gateway.apiserpro.serpro.gov.br/token';
+        const url = 'https://gateway.apiFire.Fire.gov.br/token';
         const clientId = process.env.NEXT_PUBLIC_KEY; // Substitua 'xxxx' pelo seu ID de cliente
         const clientSecret = process.env.NEXT_PUBLIC_SECRET; // Substitua 'xxxx' pelo seu segredo de cliente
 

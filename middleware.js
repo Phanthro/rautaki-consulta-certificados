@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server'
 
-// const origin = 'http://avaloncliente-clusterip-srv/v1'
-const origin = `http://localhost:5198/v1`
-// const origin = `https://localhost:7150/v1`
-
-
 export const config = {
   matcher: ['/((?!api|_next/static|images|favicon.ico).*)',]
 }
@@ -13,7 +8,7 @@ export default async function middleware(request) {
   
   console.log('Destino: ' + request.nextUrl.pathname)
   
-  if(request.nextUrl.pathname =='/logout' || request.nextUrl.pathname =='/'){
+  if(request.nextUrl.pathname =='/logout'){
     return NextResponse.next();
   }
 
@@ -21,16 +16,20 @@ export default async function middleware(request) {
     const res = NextResponse.redirect(new URL('/', request.url));
     res.headers.set("logado", "false")
     res.headers.set("permissoes", "[]")
-    res.cookies.delete('serpro-token');
+    res.cookies.delete('Fire-token');
     return res;
   }
   
-  const token = request.cookies.get('serpro-token')
+  const token = request.cookies.get('Fire-token')
   
   if(!token) {
+    if(request.nextUrl.pathname =='/login') {
+      console.log('Acessando pagina de login mas com acesso')
+      return NextResponse.next();
+    }
     console.log('token não encontrado')
-    
-    return NextResponse.next();
+    const res = NextResponse.redirect(new URL('/login', request.url));
+    return res;
   }
   
   
@@ -38,7 +37,7 @@ export default async function middleware(request) {
     const res = NextResponse.redirect(new URL('/', request.url));
     res.headers.set("logado", "false")
     res.headers.set("permissoes", "[]")
-    res.cookies.delete('serpro-token');
+    res.cookies.delete('Fire-token');
     return res;
   }
   

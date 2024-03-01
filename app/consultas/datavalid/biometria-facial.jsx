@@ -12,18 +12,23 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { enviaFormulario } from '@/app/componentes/enviarFormulario';
 import { useAmbiente } from '@/utils/AmbienteContext';
 import { obterConsulta } from '../obterConsultas';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Creditos from '@/app/componentes/creditos';
+import { consultaCredito } from '@/app/componentes/consultaCredito';
 
 registerLocale('pt-BR', pt)
 
 
 const BiometriaFacial = () => {
     const router = useRouter();
-    const {setDados, creditos, consultas} = useAmbiente();
+    const { setDados, creditos, consultas, user, setCreditos } = useAmbiente();
 
     const [imagemCarregada, setImagemCarregada] = useState('')
     const [open, setOpen] = useState(false);
     const [valorConsulta, setValorConsulta] = useState(0);
     const [temCredito, setTemCredito] = useState(false);
+    const [consultando, setConsultando] = useState(false);
 
 
     const overlayStyle = { background: 'rgba(0,0,0,0.5)' };
@@ -86,7 +91,7 @@ const BiometriaFacial = () => {
 
     const updateNestedState = (prevObj, keys, value) => {
         if (keys.length === 1) {
-            if(keys[0] === 'possui_impedimento')
+            if (keys[0] === 'possui_impedimento')
                 value = value === "true"
 
             return {
@@ -116,20 +121,31 @@ const BiometriaFacial = () => {
         const imageFile = files[0];
 
         if (imageFile) {
+            const tamanhoMaximoEmMB = 1;
+            const tamanhoMaximoEmBytes = tamanhoMaximoEmMB * 1024 * 1024;
+
+            if (imageFile.size > tamanhoMaximoEmBytes) {
+                alert(`A imagem deve ter no máximo ${tamanhoMaximoEmMB} MB.`);
+                // Resetar o controle de input
+                e.target.value = null;
+                setImagemCarregada(null);
+                return;
+            }
+
+
             // Leitura do arquivo como base64
             const reader = new FileReader();
             reader.onloadend = () => {
 
                 setImagemCarregada(reader.result)
 
-                
                 const base64String = reader.result;
                 const [formato, base64] = base64String.split(',');
 
                 let formatoImagem = formato.split(';')[0].split('/')[1];
-                
-                if(formatoImagem === 'jpeg') formatoImagem = 'jpg'
-                    
+
+                if (formatoImagem === 'jpeg') formatoImagem = 'jpg'
+
 
                 setFormData({
                     ...formData,
@@ -173,7 +189,7 @@ const BiometriaFacial = () => {
 
     const validateForm = () => {
         let isValid = true;
-      
+
         return isValid;
     };
 
@@ -187,14 +203,15 @@ const BiometriaFacial = () => {
                 ...formData,
                 answer: {
                     ...formData['answer'],
-                    endereco: {...formData['endereco'],
-                    logradouro: cepretorno.logradouro,
-                    complemento: cepretorno.complemento,
-                    bairro: cepretorno.bairro,
-                    cep: cepretorno.cep,
-                    municipio: cepretorno.localidade,
-                    uf: cepretorno.uf,
-                }
+                    endereco: {
+                        ...formData['endereco'],
+                        logradouro: cepretorno.logradouro,
+                        complemento: cepretorno.complemento,
+                        bairro: cepretorno.bairro,
+                        cep: cepretorno.cep,
+                        municipio: cepretorno.localidade,
+                        uf: cepretorno.uf,
+                    }
                 },
             });
         }
@@ -206,21 +223,31 @@ const BiometriaFacial = () => {
         setErroGeral('')
         if (validateForm()) {
 
-            // const url = `http://avaloncliente-clusterip-srv/v1/Cadastro`
-            const url = `https://localhost:7150/v1/DataValid/ValidarIdentidade/facial`
+            const url = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/DataValid/ValidarIdentidade/facial`
 
-            console.log('enviando formulário!')
+            try {
+                
+                setConsultando(true);
 
-            const resposta = await enviaFormulario(formData, url, 'POST')
+                const resposta = await enviaFormulario(formData, url, 'POST')
+                setDados({
+                    requisicao: formData,
+                    retorno: JSON.parse(resposta).dados,
+                    consulta: 'facial'
+                })
+                router.push('/consultas/datavalid/resultado')
 
-            
-            setDados({
-                requisicao: formData,
-                retorno: JSON.parse(resposta).dados,
-                consulta: 'facial'
-            })
+            } catch (error) {
 
-            router.push('/consultas/datavalid/resultado')
+                toast(error.message, {
+                    hideProgressBar: true,
+                    autoClose: false,
+                    type: 'error'
+                });
+            }
+            finally {
+                setConsultando(false);
+            }
 
         }
         else {
@@ -229,7 +256,7 @@ const BiometriaFacial = () => {
         }
     };
 
-    const setExemplo = ()=>{
+    const setExemplo = () => {
 
         setFormData({
             "key": {
@@ -277,28 +304,34 @@ const BiometriaFacial = () => {
 
     }
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        const verificaCreditos = async ()=>{
+        const verificaCreditos = async (clienteId) => {
+            // var res = await consultaCredito(clienteId)
+            // setCreditos(JSON.parse(res))
             const consulta = await obterConsulta(100);
 
-            if(!consulta) return;
-
+            if (!consulta) return;
             const saldo = creditos.dados;
             const custoConsulta = consulta.valor;
             setValorConsulta(custoConsulta)
-            
-            if(saldo >= custoConsulta){
+
+            if (saldo >= custoConsulta) {
                 setTemCredito(true)
             }
         }
-        verificaCreditos()
+        verificaCreditos(user.clienteId)
 
-    },[creditos])
+    }, [])
 
 
     return (
         <div className='p-10'>
+            {creditos ?
+                <div className='absolute right-20 md:right-40 m-[-20px]'>
+                    <Creditos />
+                </div> : ''
+            }
             <button onClick={setExemplo}>Exemplo</button>
             <form onSubmit={handleSubmit} className="p-2 bg-white fundo-cinza datavalid m-auto mt-10">
 
@@ -342,7 +375,7 @@ const BiometriaFacial = () => {
                             name="answer.sexo"
                             value={formData.answer.sexo}
                             onChange={handleInputChange}
-                            className="pr-"
+                            className=""
                             required
                         >
                             <option value='' disabled></option>
@@ -697,7 +730,7 @@ const BiometriaFacial = () => {
                             selected={formData.answer.cnh.data_ultima_emissao}
                             onChange={date => handleInputCnhDateChange('answer.cnh.data_ultima_emissao', date)}
                             className=" p-2 border"
-                            dateFormat="dd/MM/yyyy" 
+                            dateFormat="dd/MM/yyyy"
                             required
                         />
                         {/* {errors.answer.cnh.data_ultima_emissao && <span className="text-red-500 text-sm">{errors.answer.cnh.data_ultima_emissao}</span>} */}
@@ -753,33 +786,36 @@ const BiometriaFacial = () => {
 
                     <div className='w-full border-b font-RobotoMono text-lg'> Foto facial:</div>
 
-                    <div className='ml-3 w-[475px] relative'>
-                    <label htmlFor="image" className='label-imagem'>Escolher foto:</label>
-                    <input 
-                        type="file" 
-                        name="answer.biometria_face.base64" 
-                        onChange={handleInputImageChange} 
-                        accept="image/*" 
-                        className='input-imagem '
-                        required
+                    <div className='ml-3 w-[175px] relative'>
+                        <label htmlFor="answer.biometria_face.base64" className='input-imagem'>Escolher foto</label>
+                        <input
+                            id="answer.biometria_face.base64"
+                            type="file"
+                            name="answer.biometria_face.base64"
+                            onChange={handleInputImageChange}
+                            accept="image/*"
+                            className=''
+                            required
                         />
                     </div>
                     {imagemCarregada && (
-                            <div>
-                                <p>Foto :</p>
-                                <img src={imagemCarregada} alt="Imagem carregada" style={{ width: '200px' }} />
-                            </div>
-                        )}
+                        <div>
+                            <p>Foto :</p>
+                            <img src={imagemCarregada} alt="Imagem carregada" style={{ width: '200px' }} />
+                        </div>
+                    )}
 
                 </div>
 
                 <div className='w-full text-center'>
-                    {temCredito?
-                    <button type="submit" className="bg-cor-principal hover:bg-verde text-white font-bold py-2 px-4 shadow-sombra w-[178px] h-[50px]">
-                        Consultar <div className='text-xs font-RobotoMono font-normal'>(R${valorConsulta.toFixed(2)})</div>
-                    </button>
-                    :
-                    <div>Créditos insuficiente.</div>
+                    {creditos.dados >= valorConsulta ?
+                        !consultando ?
+                            <button type="submit" className="bg-cor-tercearia hover:bg-verde text-white font-bold py-2 px-4 shadow-sombra w-[178px] h-[50px]">
+                                Consultar <div className='text-xs font-RobotoMono font-normal'>(R${valorConsulta.toFixed(2)})</div>
+                            </button>
+                            : <div>Consultando...</div>
+                        :
+                        <div>Créditos insuficiente.</div>
                     }
                 </div>
                 {erroGeral && <span className="text-red-500 text-sm">{erroGreal}</span>}
@@ -796,6 +832,18 @@ const BiometriaFacial = () => {
             <div className='fixed border top-0 right-[120px] w-[400px] h-fit bg-slate-200 hidden'>
                 <pre className='text-sm'>{JSON.stringify(formData, null, 2)}</pre>
             </div>
+            {/* ****** */}
+
+            <ToastContainer
+                position="bottom-center"
+                autoClose={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
         </div>
     )
 

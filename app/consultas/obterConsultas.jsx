@@ -4,7 +4,7 @@ import { enviaFormulario } from "../componentes/enviarFormulario";
 
 export async function obterConsulta(consultaId) {
 
-    const url = `https://localhost:7150/v1/Consultas/ObterConsultas`
+    const url = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/Consultas/ObterConsultas`
 
     const res = await enviaFormulario('', url, 'GET')
 

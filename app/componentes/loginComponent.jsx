@@ -50,8 +50,7 @@ const LoginComponent = () => {
       }));
       try {
 
-        // const url = `http://avaloncliente-clusterip-srv/v1/Auth/login`
-        const url = `https://localhost:7150/v1/Auth/login`
+        const url = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/Auth/login`
 
         await fetch(url, {
           method: 'GET',
@@ -72,7 +71,7 @@ const LoginComponent = () => {
             setPermissoes(retorno.permissoes)
             setToken(retorno.jwt)
 
-            let url = `https://localhost:7150/v1/Auth/ValidaToken`
+            let url = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/Auth/ValidaToken`
             const response = await ValidaToken(url)
             
             const user = await response
@@ -111,52 +110,49 @@ const LoginComponent = () => {
   };
 
   return (
-    <div className="h-[700px] flex flex-col items-center justify-center bg-gray-300">
-
-      <div className="modal-login flex flex-wrap border relative">
-        <div className='header m-auto'>
-          entrar
-          {/* <img src="../images/logo_oficial_01.png" width={132} height={132} className='m-auto' /> */}
+      <div className="bg-white m-auto">
+        <div className='m-auto flex flex-auto max-w-[500px] justify-between p-[15px]'>
+          <div className=''>
+            <img src='/images/fire_logo.png' width={200}/>
+          </div>  
+          <div  className=''>
+            <img src='/images/fire_seta.png' height={50} width={50}/>
+          </div>
         </div>
-
-        <a href='/' className="close">
-          <img src="../images/icon_close square.svg" width={30} height={30} className='' />
-        </a>
-
-
-        <form onSubmit={handleSubmit} className="formulario-contato md:p-2 bg-white fundo-cinza m-auto text-center">
-          <div className="mb-4 flex items-center">
-            <span><img src="../images/icon_user.svg" width={32} height={36} className='mr-4' /></span>
+        <form onSubmit={handleSubmit} className="formulario-contato md:p-2 bg-white fundo-cinza m-auto text-center p-5">
+          <div  className="mb-4 max-w-[225px] h-[32px] relative m-auto">
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="p-2 w-full border "
+              className="p-2 absolute left-0 w-full h-full"
               placeholder="Login"
               autoComplete="on"
+              width={255}
             />
             {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
           </div>
-          <div className="mb-6 flex items-center">
-            <span><img src="../images/icon_lock.svg" width={32} height={33} className='mr-4' /></span>
+          <div className="mb-6 max-w-[225px] h-[32px] relative m-auto">
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="p-2 w-full border "
+              className="p-2 absolute left-0 w-full h-full"
               placeholder="Senha"
               autoComplete="off"
             />
+            <span className='absolute z-10 right-0'>
+              <img src="/images/login_locker.svg" width={20} height={20} className='m-2' />
+            </span>
             {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
           </div>
 
 
           <button
             type="submit"
-            className="bg-cor-principal hover:bg-verde text-white font-bold py-2 
-                px-4 shadow-sombra w-[178px] h-[50px] text-[16px] uppercase"
+            className="bg-botao hover:bg-verde text-white font-bold py-2 px-10 rounded-lg"
                 >
             <span className={`${!isLoading && 'hidden'}`}>
               <svg className="inline animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -171,7 +167,6 @@ const LoginComponent = () => {
 
       </div>
 
-    </div>
   );
 };
 

@@ -12,6 +12,9 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { enviaFormulario } from '@/app/componentes/enviarFormulario';
 import { useAmbiente } from '@/utils/AmbienteContext';
 import { obterConsulta } from '../obterConsultas';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 registerLocale('pt-BR', pt)
 
@@ -26,6 +29,7 @@ const Documento = () => {
     const [open, setOpen] = useState(false);
     const [valorConsulta, setValorConsulta] = useState(0);
     const [temCredito, setTemCredito] = useState(false);
+    const [consultando, setConsultando] = useState(false);
 
 
     const overlayStyle = { background: 'rgba(0,0,0,0.5)' };
@@ -176,21 +180,33 @@ const Documento = () => {
         setErroGeral('')
         if (validateForm()) {
 
-            // const url = `http://avaloncliente-clusterip-srv/v1/Cadastro`
-            const url = `https://localhost:7150/v1/DataValid/ValidarIdentidade/documento`
+            const url = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1/DataValid/ValidarIdentidade/documento`;
 
-            console.log('enviando formulário!')
+            try {
 
-            const resposta = await enviaFormulario(formData, url, 'POST')
+                setConsultando(true);
 
-            
-            setDados({
-                requisicao: formData,
-                retorno: JSON.parse(resposta).dados,
-                consulta: 'documento'
-            })
+                const resposta = await enviaFormulario(formData, url, 'POST')
+                
+                setDados({
+                    requisicao: formData,
+                    retorno: JSON.parse(resposta).dados,
+                    consulta: 'documento'
+                })
 
-            router.push('/consultas/datavalid/resultado')
+                router.push('/consultas/datavalid/resultado')
+
+            } catch (error) {
+
+                toast(error.message, {
+                    hideProgressBar: true,
+                    autoClose: false,
+                    type: 'error'
+                });
+            }
+            finally {
+                setConsultando(false);
+            }
 
         }
         else {
@@ -304,12 +320,14 @@ const Documento = () => {
                 </div>
 
                 <div className='w-full text-center'>
-                    {temCredito?
-                    <button type="submit" className="bg-cor-principal hover:bg-verde text-white font-bold py-2 px-4 shadow-sombra w-[178px] h-[50px]">
-                        Consultar <div className='text-xs font-RobotoMono font-normal'>(R${valorConsulta.toFixed(2)})</div>
-                    </button>
-                    :
-                    <div>Créditos insuficiente.</div>
+                    {creditos.dados >= valorConsulta ?
+                        !consultando ?
+                            <button type="submit" className="bg-cor-tercearia hover:bg-verde text-white font-bold py-2 px-4 shadow-sombra w-[178px] h-[50px]">
+                                Consultar <div className='text-xs font-RobotoMono font-normal'>(R${valorConsulta.toFixed(2)})</div>
+                            </button>
+                            : <div>Consultando...</div>
+                        :
+                        <div>Créditos insuficiente.</div>
                     }
                 </div>
                 {erroGeral && <span className="text-red-500 text-sm">{erroGreal}</span>}
@@ -326,6 +344,17 @@ const Documento = () => {
             <div className='fixed border top-0 right-[120px] w-[400px] h-fit bg-slate-200 hidden'>
                 <pre className='text-sm'>{JSON.stringify(formData, null, 2)}</pre>
             </div>
+
+            <ToastContainer
+                position="bottom-center"
+                autoClose={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark" />
         </div>
     )
 

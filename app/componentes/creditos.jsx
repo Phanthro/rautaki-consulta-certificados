@@ -11,22 +11,22 @@ const Creditos = () => {
     const {creditos, setCreditos, isLogado, user} = useAmbiente(0);
 
     useEffect(()=>{
-        const consultaCreditos = async  (clienteId) => {
-            var res = await consultaCredito(clienteId)
+        const consultaCreditos = async  (usuarioId) => {
+            var res = await consultaCredito(usuarioId)
             setCreditos(JSON.parse(res))
 
         }
-        consultaCreditos(user.clienteId);
+        consultaCreditos(user.usuarioId);
 
-    },[])
+    },[user])
 
     return (
-        <div className='flex items-baseline relative'>
-            <span className='text-xs text-neutral-500 font-mono absolute top-[-12px] left-2'>créditos</span>
-            <div className="text-green-600 transition duration-200 font-RobotoMono
-                            motion-reduce:transition-none dark:text-green-400 lg:px-2 text-2xl
-                            [&.active]:text-black/90 dark:[&.active]:text-green-400"
-            >
+        <div className='flex flex-col'>
+            <div className='text-xs text-cinza font-mono flex'>
+                <img src="/images/dolar.svg" className="self-center" /> 
+                <span className="self-center">Créditos</span>
+            </div>
+            <div className="text-cinza font-RobotoMono text-md" >
                 R$ {creditos.dados && creditos.dados.toFixed(2)}
             </div>
         </div>

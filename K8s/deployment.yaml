@@ -1,37 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rautaki-consulta-cert-depl
+  name: rautaki-fire-depl
 spec:
   replicas: 1
   selector: 
     matchLabels: 
-      app: rautaki-consulta-cert
+      app: rautaki-fire
   template:
     metadata:
       labels: 
-        app: rautaki-consulta-cert
+        app: rautaki-fire
     spec:
       containers:
-      - name: rautaki-consulta-cert
-        image: DOCKER_IMAGE
+      - name: rautaki-fire
+        image: gcr.io/booming-pride-412719/fire-front:v1.1
         env:
         - name: NEXT_PUBLIC_AVALON_CLIENTE_IP
-          value: "http://rautaki-consulta-cert-api-clusterip-srv"
+          value: "http://rautaki-fire-api-clusterip-srv"
         - name: PORT
-          value: "8080"
+          value: "8081"
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: rautaki-consulta-cert-clusterip-srv
+  name: rautaki-fire-clusterip-srv
 spec:
   type: ClusterIP
   selector:
-    app: rautaki-consulta-cert
+    app: rautaki-fire
   ports:
-  - name: rautaki-consulta-cert
+  - name: rautaki-fire
     protocol: TCP
     port: 80
-    targetPort: 8080
+    targetPort: 8081

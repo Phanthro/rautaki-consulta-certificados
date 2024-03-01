@@ -3,18 +3,14 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAmbiente } from './AmbienteContext';
 import { ValidaToken } from './ValidaToken';
-// import { Paginas } from '@types/paginas';
 
-// const origin = 'http://avaloncliente-clusterip-srv/v1'
-// const origin = `http://localhost:5198/v1`
-const origin = `https://localhost:7150/v1`
+const origin = `${process.env.NEXT_PUBLIC_AVALON_CLIENTE_IP}/v1`
 
 const withAuth = (Component) => {
-  const AuthenticatedComponent = () => {
+  const AuthenticatedComponent = (props) => {
     const router = useRouter();
-    const pathname = usePathname();
 
-    const { isLogado, setIsLogado, setUser } = useAmbiente();
+    const { setIsLogado, setUser } = useAmbiente();
   
     useEffect(() => {
       const getUser = async () => {
@@ -34,7 +30,7 @@ const withAuth = (Component) => {
       getUser();
   
     }, []);
-    return <Component />
+    return <Component {...props} />
   }
 
   return AuthenticatedComponent;

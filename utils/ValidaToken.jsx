@@ -5,12 +5,12 @@ import { cookies } from "next/headers"
 export async function ValidaToken(url){
 
     const cookieStore = cookies()
-    const token = cookieStore.get('serpro-token')
+    const token = cookieStore.get('Fire-token')
     if(!token) return;
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${token.value}`);
-    myHeaders.append("Cookie", `serpro-token=${token.value}`);
+    myHeaders.append("Cookie", `Fire-token=${token.value}`);
     
     var requestOptions = {
       method: 'GET',

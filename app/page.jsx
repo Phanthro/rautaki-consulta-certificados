@@ -4,48 +4,58 @@ import CardServico from './componentes/card-servico'
 import withAuth from '@/utils/AuthCheck'
 import { enviaFormulario } from './componentes/enviarFormulario'
 import { useAmbiente } from '@/utils/AmbienteContext'
+import Creditos from './componentes/creditos'
+import MenuPrincipal from './componentes/menu-principal'
+import MenuCertidoes from './componentes/menu-certidoes'
 
 const Home = () => {
 
-  const [consultas, setConsultas] = useState({});
+  const { creditos } = useAmbiente();
+  const [menu, setMenu] = useState(0)
 
-  useEffect(()=>{
-    const consultaConsultas = async  () => {
+  const handleTipoChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      ['tipoInscricao']: value,
+      ['inscricao']: ''
+    });
+    
+    formData.inscricao = ''; // Limpa o campo de inscrição ao trocar o tipo
+  };
 
-        const url = `https://localhost:7150/v1/Consultas/ObterConsultas`
+  const getPlaceholder = () => {
+    return formData.tipoInscricao === 'cpf' ? 'Digite seu CPF' : 'Digite seu CNPJ';
+  };
 
-        const res = await enviaFormulario('', url, 'GET')
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
-        if(res){
-          let jsonParse = JSON.parse(res)
-          jsonParse.dados = jsonParse.dados.filter( item => !item.itemPai )
-          setConsultas(jsonParse)
-        }
+  useEffect(() => {
 
-    }
-    consultaConsultas();
 
-},[])
+  }, [])
+
   return (
-    <div>
-      <div className="max-w-3xl mx-auto text-center mt-12">
-        <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-2 border-b-2 border-gray-500 pb-2">
-          Nossas Consultas
-        </h1>
-        <p className="text-lg text-gray-800 mb-8">Abaixo estão as consultas que estão disponíveis.</p>
-      </div>
-      <div className='max-w-[1200px] min-h-fit m-auto text-center flex justify-center'>
-        {consultas && consultas.dados && consultas.dados.map((item, index) => (
-          <CardServico
-            key={index}
-            titulo={item.nome}
-            descricao={item.descricao}
-            valor={item.valor}
-            link={item.link}
-          />
-        ))}
+    <div className='bg-fundo-borda bg-contain bg-no-repeat bg-cor-principal text-black min-h-[600px]'>
+      {creditos ?
+        <div className='flex flex-row pt-10 justify-center space-x-[150px]'>
+          <div className='bg-cinza2 w-[87px] h-[30px] text-white p-1 '>
+            Certidões
+          </div>
+          <Creditos />
+        </div> : ''
+      }
+      <div className='max-w-[380px] border border-cinza2 m-auto my-3'></div>
 
-      </div>
+        {menu == 0 && <MenuPrincipal menu={setMenu}/>}
+        {menu == 1 && <MenuCertidoes menu={setMenu}/>}
+
     </div>
   )
 }

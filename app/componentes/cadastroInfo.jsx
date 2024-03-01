@@ -7,7 +7,7 @@ const CadastroInfo = ({closeModal}) => {
         <div className='header'>&nbsp;</div>
 
         <a className="close" onClick={closeModal}>
-        <img src="../images/icon _close square_.svg" width={60} height={60} className='' />
+        <img src="/images/icon _close square_.svg" width={60} height={60} className='' />
         </a>
         <div className='modal-subtitulo'>Cadastro efetuado com sucesso!</div>
 
